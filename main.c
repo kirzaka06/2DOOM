@@ -11,6 +11,7 @@ enum DIR{UP=0,RIGHT=1,DOWN=2,LEFT=3};
 int RUNNING=0;
 double dT=0.0;
 Entity_t player;
+float camera[2]={0,0};
 Timer_t animtimer={200,0,0};
 
 void Input(){
@@ -73,12 +74,6 @@ int main(){
         player=CreateEntity(0,0,64,64,vel,player_tex,src);
     }
     SDL_Texture* floor=LoadImage(win,"src/img/floor.png");
-    int floor_pos[9][2];
-    for(int i=0;i<9;++i){
-        for(int j=0;j<2;++j){
-            floor_pos[i][j];
-        }
-    }
     RUNNING=1;
     /*game loop*/
     /*frame limiter variables*/
@@ -93,17 +88,20 @@ int main(){
         /*rendering*/
         ClearWindow(win);
         for(int i=-1;i<2;++i){
-            DisplayImageS(win,floor,player.x+i*400,player.y,400,300);
+            DisplayImageS(win,floor,i*400-camera[0],0-camera[1],400,300);
         }
-        DisplayEntity(win,player);
+        DisplayEntity(win,player, camera);
         PresentWindow(win);
         /*update*/
         /*player movement*/
+        camera[0]=player.x+(player.w/2)-200;
+        camera[1]=player.y+(player.h/2)-150;
         float ply_mag=sqrt(SQR(player.vel[0]) + SQR(player.vel[1]));
         if(ply_mag>0){
             player.x+=((player.vel[0]*PLY_SPD)/ply_mag)*dT;
             player.y+=((player.vel[1]*PLY_SPD)/ply_mag)*dT;
         }
+        /*anims*/
         switch(player.dir){
             case UP:
                 player.src.y=64;
