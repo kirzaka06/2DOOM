@@ -87,20 +87,17 @@ int main(){
         Input();
         /*rendering*/
         ClearWindow(win);
-        for(int i=-1;i<2;++i){
-            DisplayImageS(win,floor,i*400-camera[0],0-camera[1],400,300);
-        }
-        DisplayEntity(win,player, camera);
+        DisplayImageS(win,floor,0,0,400,300);
+        DisplayEntity(win,player);
         PresentWindow(win);
         /*update*/
         /*player movement*/
-        camera[0]=player.x+(player.w/2)-200;
-        camera[1]=player.y+(player.h/2)-150;
         float ply_mag=sqrt(SQR(player.vel[0]) + SQR(player.vel[1]));
         if(ply_mag>0){
             player.x+=((player.vel[0]*PLY_SPD)/ply_mag)*dT;
             player.y+=((player.vel[1]*PLY_SPD)/ply_mag)*dT;
         }
+
         /*anims*/
         switch(player.dir){
             case UP:
@@ -116,7 +113,6 @@ int main(){
                 player.src.y=192;
             break;
         }
-        /*animation handling*/
         if(player.vel[0] > 0 || player.vel[0]<0 || player.vel[1] > 0 || player.vel[1] < 0){
             TickTimer(&animtimer);
             if(animtimer.shot){
@@ -127,6 +123,7 @@ int main(){
             }
         }else
             player.src.x=0;
+
         /*frame limit end*/
         time=SDL_GetTicks()-start;
         if(DELAY>time)

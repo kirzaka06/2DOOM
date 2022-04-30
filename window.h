@@ -46,8 +46,8 @@ void DisplayImageS(Window_t* win, SDL_Texture* tex, int x, int y, int w, int h){
     SDL_Rect dst={x,y,w,h};
     SDL_RenderCopy(win->ren,tex,NULL,&dst);
 }
-void DisplayEntity(Window_t* win, Entity_t ent, float cam[2]){
-    SDL_Rect dst={ent.x-cam[0],ent.y-cam[1],ent.w,ent.h};
+void DisplayEntity(Window_t* win, Entity_t ent){
+    SDL_Rect dst={ent.x,ent.y,ent.w,ent.h};
     SDL_RenderCopy(win->ren,ent.tex,&ent.src,&dst);
 }
 #endif 
