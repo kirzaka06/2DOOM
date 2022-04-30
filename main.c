@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include "window.h"
+#include "entity.h"
 #include "utils.h"
+#include "shootils.h"
 
 #define DELAY 1000/60
-#define PLY_SPD 200
+#define PLY_SPD 100
 #define SQR(val1) (val1*val1)
 enum DIR{UP=0,RIGHT=1,DOWN=2,LEFT=3};
 
@@ -12,8 +14,28 @@ int RUNNING=0;
 double dT=0.0;
 Entity_t player;
 float camera[2]={0,0};
-Timer_t animtimer={200,0,0};
+Timer_t animtimer={150,0,0};
+SDL_Texture* bullet;
+Bullet_t* head;
 
+double DirToAng(int dir){
+    double ang=0;
+    switch(dir){
+        case UP:
+            ang=90;
+        break;
+        case DOWN:
+            ang=270;
+        break;
+        case RIGHT:
+            ang=0;
+        break;
+        case LEFT:
+            ang=180;
+        break;
+    }
+    return ang;
+}
 void Input(){
     SDL_Event e;
     while(SDL_PollEvent(&e)){
@@ -39,6 +61,9 @@ void Input(){
                 case SDLK_d:
                     player.vel[0]=1;
                     player.dir=RIGHT;
+                break;
+                case SDLK_SPACE:
+                    CreateBullet(head, player.x, player.y, 8,8, bullet,DirToAng(player.dir));
                 break;
             }
         }
@@ -71,9 +96,12 @@ int main(){
         SDL_Texture *player_tex=LoadImage(win,"src/img/player_spritesheet.png");
         int vel[2]={0,0};
         SDL_Rect src={0,0,64,64};
-        player=CreateEntity(0,0,64,64,vel,player_tex,src);
+        player=CreateEntity(0,0,32,32,vel,player_tex,src);
     }
+    bullet=LoadImage(win, "src/img/bullet.png");
     SDL_Texture* floor=LoadImage(win,"src/img/floor.png");
+    head=CreateBulletHead(0,0,8,8,bullet,300);
+    CreateBullet(head, 32, 86, 8,8, bullet, 300);
     RUNNING=1;
     /*game loop*/
     /*frame limiter variables*/
@@ -89,6 +117,12 @@ int main(){
         ClearWindow(win);
         DisplayImageS(win,floor,0,0,400,300);
         DisplayEntity(win,player);
+        int num=0;
+        for(Bullet_t* tmp=head;tmp!=NULL;tmp=tmp->next){
+            DisplayImageS(win,tmp->tex,tmp->x,tmp->y,tmp->w,tmp->h);
+            ++num;
+        }
+        printf("Iterations: %d\n",num);
         PresentWindow(win);
         /*update*/
         /*player movement*/
